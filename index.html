@@ -10,7 +10,7 @@
 	<p>UwU</p>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
 	<script>
-  		var socket = io.connect("http://localhost:3000/seatsData");
+  		var socket = io.connect("http://localhost/seatsData");
 		socket.on('data', (msg) => {
 			console.log(msg);
   		});

@@ -18,7 +18,7 @@ if (!firebase.apps.length)
 	firebase.initializeApp(firebaseConfig);
 
 /* configs */
-export const port = 3000;
+export const port = 80;
 export const ALLOWED_CAMPUS = 16; // khouribga
 
 /* captcha */
