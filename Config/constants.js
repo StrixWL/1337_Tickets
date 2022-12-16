@@ -1,3 +1,4 @@
+import firebase from 'firebase';
 
 /* auth */
 export const CLIENT_ID = "u-s4t2ud-b8392d8b5b09f5657d42f07a056f9c85d68c1f941659276cf87972b7ee2b1467";
@@ -13,9 +14,11 @@ export const firebaseConfig = {
 	appId: "1:93657078395:web:b97bb0059b7b6f9354e0de",
 	measurementId: "G-F0T26X8JNT"
 }
+if (!firebase.apps.length)
+	firebase.initializeApp(firebaseConfig);
 
 /* configs */
-export const port = 80;
+export const port = 3000;
 export const ALLOWED_CAMPUS = 16; // khouribga
 
 /* captcha */

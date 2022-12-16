@@ -1,50 +1,39 @@
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+/* CODE STILL NOT ORGANIZED YET */
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 const app = express();
+import http from 'http';
+import { port } from './Config/constants.js';
+const server = http.createServer(app);
+import { Server } from 'socket.io';
+const io = new Server(server);
 import { getNewToken, getStudentData } from './src/fetchUserData.js'
+import { isAuthorized } from './src/authentication.js'
 import { v4 } from 'uuid';
 import { verify as verifyCaptcha } from 'hcaptcha';
-import { SITE_KEY, SECRET } from './Config/constants.js';
-import { port, firebaseConfig } from './Config/constants.js';
-
+import { SECRET } from './Config/constants.js';
 import firebase from 'firebase';
-
-firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
-
-const test = () => false;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const isAuthorized = async (Authorization) => await new Promise (async resolve => {
-	if (!Authorization) 
-		return resolve(null);
-	const userdb = database.ref(`Authorizations/${Authorization}`);
-	await userdb.get().then(snapshot => {
-		const val = snapshot.val();
-		if (val && val.authorized)
-			resolve(val);
-	});
-	resolve(null);
-})
-
 app.post('/auth', async (req, res) => {
 	let studentData, Authorization;
-	if (req.cookies.Authorization) {
-		/* check if cookie authorization key is valid */
-		const userdb = database.ref(`Authorizations/${req.cookies.Authorization}`);
-		await userdb.get().then(snapshot => {
-			const val = snapshot.val();
-			if (val && val.authorized)
-				Authorization = val;
-		});
-	}
+	if (req.cookies.Authorization)
+		Authorization = await isAuthorized(req.cookies.Authorization);
 	if (!studentData && !Authorization) {
-		/* fetch user data, null if invalid input */
-		studentData = await getStudentData(await getNewToken(req.body.code));
-		if (studentData) {
+		if (studentData = await getStudentData(await getNewToken(req.body.code))) {
 			Authorization = {
 				authorized: true,
 				Authorization: v4(),
@@ -56,7 +45,6 @@ app.post('/auth', async (req, res) => {
 				}
 			}
 			res.cookie("Authorization", Authorization.Authorization);
-			/* set new authorization key in db and send back to client */
 			const userDB = database.ref(`Authorizations/${Authorization.Authorization}`);
 			delete Authorization.Authorization;
 			await userDB.set(Authorization);
@@ -67,20 +55,18 @@ app.post('/auth', async (req, res) => {
 	});
 });
 
-
-/* still working on this stuff bellow */
-app.get('/availableSeats', async (req, res) => {
+app.get('/seatsData', async (req, res) => {
 	const userData = await isAuthorized(req.cookies.Authorization);
 	if (userData) {
 		res.json({
 			success: true
-		})
+		});
 	}
 	else
 		res.json({
 			success: false,
 			reason: "Unauthorized."
-		})
+		});
 })
 
 app.post('/book', async (req, res) => {
@@ -99,6 +85,23 @@ app.post('/book', async (req, res) => {
 	}
 });
 
-app.listen(port, () => {
-	console.log(`Listening on port ${port}`)
+app.get('/', (req, res) => {
+	res.sendFile('/Users/med/Brahim/1337/index.html');
+});
+
+io.of('seatsData').on('connection', (socket) => {
+	console.log("user connected");
+	socket.emit('data', {
+		data: "i can see you are connected"
+	});
+});
+
+setInterval(() => {
+	io.of('seatsData').emit('data', {
+		data: "i can see you are still connected"
+	});
+}, 2000);
+
+server.listen(port, () => {
+	console.log(`Listening on port ${port}`);
 })
