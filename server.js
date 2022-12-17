@@ -11,16 +11,16 @@ import handlers from './src/requestHandlers.js';
 
 const app = express();
 const server = http.createServer(app);
-socketHandler(server); // socket on '/seatsData'
+socketHandler(server); // socket on '/seatsData' (almost done)
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.post('/auth', handlers.auth); // Authenticate (done)
-app.post('/book', handlers.book); // Book (not done)
+app.post('/auth', handlers.auth); // Authenticate with 42 oauth2 or cookie (done)
+app.post('/book', handlers.book); // Book a seat (done)
 
 app.get('/', (req, res) => {
-	res.sendFile('/Users/med/Brahim/1337/index.html');
+	res.sendFile('/Users/med/Brahim/1337/index.html'); // temporary to test sockets
 });
 
 server.listen(port, () => {

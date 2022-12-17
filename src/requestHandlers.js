@@ -3,8 +3,8 @@ import { isAuthorized } from './authentication.js'
 import { v4 } from 'uuid';
 import firebase from 'firebase';
 import { verify as verifyCaptcha } from 'hcaptcha';
-import { SECRET } from '../Config/constants.js';
-import { getBookableBusSchedule } from './tools.js'
+import { SECRET, SEATS_PER_BUS } from '../Config/constants.js';
+import { getBookableBusSchedule, getScheduleData } from './tools.js'
 import moment from 'moment';
 
 const database = firebase.database();
@@ -41,7 +41,7 @@ const book = async (req, res) => {
 		if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
 			if ((await verifyCaptcha(SECRET, req.body["h-captcha-response"])).success) {
 				const schedule = getBookableBusSchedule();
-				if (schedule) {
+				if (Object.keys((await getScheduleData(schedule.time))).length < SEATS_PER_BUS && schedule) {
 					const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
 					await userDB.get().then(async snapshot => {
 						const userData = snapshot.val().data;
@@ -53,7 +53,7 @@ const book = async (req, res) => {
 					});
 				}
 				else
-					reject("No available tickets yet.");
+					reject("No available tickets.");
 			}
 			else
 				reject("Invalid captcha solution.");

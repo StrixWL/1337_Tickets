@@ -20,10 +20,11 @@ if (!firebase.apps.length)
 /* configs */
 export const port = 80;
 export const ALLOWED_CAMPUS = 16; // khouribga
+export const SEATS_PER_BUS = 20;
 export const busSchedules = [
 	{
 		destination: "Martil",
-		time: "7:05 AM"
+		time: "8:05 AM"
 	},
 	{
 		destination: "Tetouan",

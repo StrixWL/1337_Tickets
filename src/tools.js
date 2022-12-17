@@ -1,5 +1,17 @@
 import { busSchedules } from '../Config/constants.js';
 import moment from 'moment';
+import firebase from 'firebase';
+
+const database = firebase.database();
+
+const getScheduleData = async (schedule) => {
+	let res;
+	const scheduleDB = database.ref(`Schedules/${schedule}`);
+	await scheduleDB.get().then(snapshot => {
+		res = snapshot.val();
+	});
+	return res;
+}
 
 const getBookableBusSchedule = () => {
 	busSchedules.forEach(busSchedule => {
@@ -19,5 +31,6 @@ const getBookableBusSchedule = () => {
 };
 
 export {
-	getBookableBusSchedule
+	getBookableBusSchedule,
+	getScheduleData
 };
