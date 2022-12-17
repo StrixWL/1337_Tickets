@@ -16,7 +16,7 @@ const getBookableBusSchedule = () => {
 	})
 	busSchedules.sort((a, b) => a.delta - b.delta);
 	return busSchedules[0].delta <= 60 * 60 ? busSchedules[0] : null;
-}
+};
 
 export {
 	getBookableBusSchedule

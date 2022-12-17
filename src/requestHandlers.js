@@ -34,45 +34,41 @@ const auth =  async (req, res) => {
 	res.json(Authorization ? Authorization : {
 		authorized: false
 	});
-}
+};
 
 const book = async (req, res) => {
-	if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
-		if ((await verifyCaptcha(SECRET, req.body["h-captcha-response"])).success) {
-			const schedule = getBookableBusSchedule();
-			if (schedule) {
-				const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
-				await userDB.get().then(async snapshot => {
-					const userData = snapshot.val().data;
-					const scheduleDB = database.ref(`Schedules/${schedule.time}/${userData.fullName}`);
-					await scheduleDB.set({
-						bookedOn: moment().format('MMMM Do YYYY, h:mm:ss a')
+	new Promise(async (resolve, reject) => {
+		if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
+			if ((await verifyCaptcha(SECRET, req.body["h-captcha-response"])).success) {
+				const schedule = getBookableBusSchedule();
+				if (schedule) {
+					const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
+					await userDB.get().then(async snapshot => {
+						const userData = snapshot.val().data;
+						const scheduleDB = database.ref(`Schedules/${schedule.time}/${userData.fullName}`);
+						await scheduleDB.set({
+							bookedOn: moment().format('MMMM Do YYYY, h:mm:ss a')
+						});
+						resolve();
 					});
-					res.json({
-						success: true
-					});
-				});
+				}
+				else
+					reject("No available tickets yet.");
 			}
-			else {
-				res.json({
-					success: false,
-					reason: "No available tickets yet."
-				});
-			}
+			else
+				reject("Invalid captcha solution.");
 		}
-		else {
+		else
+			reject("Unauthorized.");
+	})
+		.then(() =>
 			res.json({
-				success: false,
-				reason: "Invalid captcha solution."
-			});
-		}
-	}
-	else {
-		res.json({
+				success: true
+			})
+		).catch(reason => res.json({
 			success: false,
-			reason: "Unauthorized."
-		});
-	}
+			reason
+		}));
 };
 
 export default {

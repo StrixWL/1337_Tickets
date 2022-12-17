@@ -14,6 +14,6 @@ const socketHandler = (server) => {
 		else
 			socket.disconnect();
 	});
-}
+};
 
 export default socketHandler;
