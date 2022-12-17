@@ -41,7 +41,9 @@ const book = async (req, res) => {
 		if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
 			if ((await verifyCaptcha(SECRET, req.body["h-captcha-response"])).success) {
 				const schedule = getBookableBusSchedule();
-				if (Object.keys((await getScheduleData(schedule.time))).length < SEATS_PER_BUS && schedule) {
+				const scheduleData = await getScheduleData(schedule.time);
+				const takenSeats = scheduleData ? Object.keys(scheduleData).length : 0;
+				if (schedule && takenSeats < SEATS_PER_BUS) {
 					const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
 					await userDB.get().then(async snapshot => {
 						const userData = snapshot.val().data;
@@ -71,7 +73,37 @@ const book = async (req, res) => {
 		}));
 };
 
+const unbook = async (req, res) => {
+	new Promise(async (resolve, reject) => {
+		if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
+			const schedule = getBookableBusSchedule();
+			if (schedule) {
+				const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
+				await userDB.get().then(async snapshot => {
+					const userData = snapshot.val().data;
+					const scheduleDB = database.ref(`Schedules/${schedule.time}/${userData.fullName}`);
+					await scheduleDB.set(null);
+					resolve();
+				});
+			}
+			else
+				reject("Can't do that right now.");
+		}
+		else
+			reject("Unauthorized.");
+	})
+		.then(() =>
+			res.json({
+				success: true
+			})
+		).catch(reason => res.json({
+			success: false,
+			reason
+		}));
+}
+
 export default {
 	auth,
-	book
+	book,
+	unbook
 };

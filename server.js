@@ -18,6 +18,7 @@ app.use(cookieParser());
 
 app.post('/auth', handlers.auth); // Authenticate with 42 oauth2 or cookie (done)
 app.post('/book', handlers.book); // Book a seat (done)
+app.delete('/book', handlers.unbook); // Unbook a seat (done)
 
 app.get('/', (req, res) => {
 	res.sendFile('/Users/med/Brahim/1337/index.html'); // temporary to test sockets

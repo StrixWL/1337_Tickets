@@ -32,7 +32,7 @@ export const busSchedules = [
 	},
 	{
 		destination: "Berkan",
-		time: "1:10 PM"
+		time: "06:40 PM"
 	}
 ];
 
