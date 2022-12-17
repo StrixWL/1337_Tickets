@@ -24,7 +24,7 @@ export const SEATS_PER_BUS = 20;
 export const busSchedules = [
 	{
 		destination: "Martil",
-		time: "8:05 AM"
+		time: "1:05 AM"
 	},
 	{
 		destination: "Tetouan",

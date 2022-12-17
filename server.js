@@ -26,3 +26,5 @@ app.get('/', (req, res) => {
 server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
 });
+
+/* ALL THE DIRTY WORK PART OF THE PROJECT IS DONE, IMPLEMENTING NEW FEATURES FROM NOW ON WILL BE FASTER */
