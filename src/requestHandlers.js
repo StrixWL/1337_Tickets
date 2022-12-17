@@ -4,6 +4,8 @@ import { v4 } from 'uuid';
 import firebase from 'firebase';
 import { verify as verifyCaptcha } from 'hcaptcha';
 import { SECRET } from '../Config/constants.js';
+import { getBookableBusSchedule } from './tools.js'
+import moment from 'moment';
 
 const database = firebase.database();
 
@@ -34,26 +36,29 @@ const auth =  async (req, res) => {
 	});
 }
 
-const seatsData = async (req, res) => {
-	const userData = await isAuthorized(req.cookies.Authorization);
-	if (userData) {
-		res.json({
-			success: true
-		});
-	}
-	else
-		res.json({
-			success: false,
-			reason: "Unauthorized."
-		});
-};
-
 const book = async (req, res) => {
-	if (await isAuthorized(req.cookies.Authorization)) {
+	if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
 		if ((await verifyCaptcha(SECRET, req.body["h-captcha-response"])).success) {
-			res.json({
-				success: true
-			});
+			const schedule = getBookableBusSchedule();
+			if (schedule) {
+				const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
+				await userDB.get().then(async snapshot => {
+					const userData = snapshot.val().data;
+					const scheduleDB = database.ref(`Schedules/${schedule.time}/${userData.fullName}`);
+					await scheduleDB.set({
+						bookedOn: moment().format('MMMM Do YYYY, h:mm:ss a')
+					});
+					res.json({
+						success: true
+					});
+				});
+			}
+			else {
+				res.json({
+					success: false,
+					reason: "No available tickets yet."
+				});
+			}
 		}
 		else {
 			res.json({
@@ -62,10 +67,15 @@ const book = async (req, res) => {
 			});
 		}
 	}
+	else {
+		res.json({
+			success: false,
+			reason: "Unauthorized."
+		});
+	}
 };
 
 export default {
 	auth,
-	seatsData,
 	book
 };

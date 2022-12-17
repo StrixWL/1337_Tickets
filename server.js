@@ -11,16 +11,13 @@ import handlers from './src/requestHandlers.js';
 
 const app = express();
 const server = http.createServer(app);
-socketHandler(server);
+socketHandler(server); // socket on '/seatsData'
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.post('/auth', handlers.auth);
-
-app.get('/seatsData', handlers.seatsData)
-
-app.post('/book', handlers.book);
+app.post('/auth', handlers.auth); // Authenticate (done)
+app.post('/book', handlers.book); // Book (not done)
 
 app.get('/', (req, res) => {
 	res.sendFile('/Users/med/Brahim/1337/index.html');
@@ -28,4 +25,4 @@ app.get('/', (req, res) => {
 
 server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
-})
+});

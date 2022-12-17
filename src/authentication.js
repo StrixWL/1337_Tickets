@@ -14,4 +14,6 @@ const isAuthorized = async (Authorization) => await new Promise (async resolve =
 	resolve(null);
 })
 
-export {isAuthorized}
+export {
+	isAuthorized
+};

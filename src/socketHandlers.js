@@ -1,18 +1,19 @@
 import { Server } from 'socket.io';
+import { getBookableBusSchedule } from './tools.js'
+import cookie from 'cookie';
+import { isAuthorized } from './authentication.js'
 
 const socketHandler = (server) => {
 	const io = new Server(server);
-	io.of('seatsData').on('connection', (socket) => {
-		socket.emit('data', {
-			data: "i can see you are connected"
-		});
+	io.of('seatsData').on('connection', async (socket) => {
+		if (socket.request.headers.cookie && await isAuthorized(cookie.parse(socket.request.headers.cookie).Authorization)) {
+			socket.emit('data', {
+				data: getBookableBusSchedule()
+			});
+		}
+		else
+			socket.disconnect();
 	});
-	
-	setInterval(() => { // update data
-		io.of('seatsData').emit('data', {
-			data: "i can see you are still connected"
-		});
-	}, 2000);
 }
 
 export default socketHandler;

@@ -53,4 +53,7 @@ const getStudentData = async (data) => await new Promise (async resolve => {
 	resolve(null);
 });
 
-export {getNewToken, getStudentData};
+export {
+	getNewToken,
+	getStudentData
+};

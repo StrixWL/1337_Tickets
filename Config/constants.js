@@ -13,13 +13,27 @@ export const firebaseConfig = {
 	messagingSenderId: "93657078395",
 	appId: "1:93657078395:web:b97bb0059b7b6f9354e0de",
 	measurementId: "G-F0T26X8JNT"
-}
+};
 if (!firebase.apps.length)
 	firebase.initializeApp(firebaseConfig);
 
 /* configs */
 export const port = 80;
 export const ALLOWED_CAMPUS = 16; // khouribga
+export const busSchedules = [
+	{
+		destination: "Martil",
+		time: "7:05 AM"
+	},
+	{
+		destination: "Tetouan",
+		time: "10:10 AM"
+	},
+	{
+		destination: "Berkan",
+		time: "1:10 PM"
+	}
+];
 
 /* captcha */
 export const SITE_KEY = "7220b247-0334-4f36-89bc-b53a683bc488";
