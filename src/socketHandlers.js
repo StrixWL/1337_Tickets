@@ -13,7 +13,8 @@ const socketHandler = (server) => {
 			socket.emit('data', {
 				data: {
 					nextBus: bookableBusSchedule,
-					availableSeats: bookableBusSchedule ? SEATS_PER_BUS - (scheduleData ? Object.keys(scheduleData).length : 0) : 0
+					availableSeats: bookableBusSchedule ? SEATS_PER_BUS - (scheduleData ? Object.keys(scheduleData).length : 0) : 0,
+					usersList: scheduleData
 				}
 			});
 		}

@@ -15,12 +15,14 @@ const auth =  async (req, res) => {
 		Authorization = await isAuthorized(req.cookies.Authorization);
 	if (!studentData && !Authorization) {
 		if (studentData = await getStudentData(await getNewToken(req.body.code))) {
+			console.log(studentData);
 			Authorization = {
 				authorized: true,
 				Authorization: v4(),
 				data: {
 					login: studentData.login,
-					fullName: studentData.usual_full_name,
+					fullName: studentData.usual_full_name,//
+					email: studentData.email,
 					campuses: studentData.campuses,
 					isStaff: studentData["staff?"]
 				}
@@ -31,9 +33,14 @@ const auth =  async (req, res) => {
 			await userDB.set(Authorization);
 		}
 	}
-	res.json(Authorization ? Authorization : {
-		authorized: false
-	});
+	if (Authorization)
+		res.json(Authorization);
+	else {
+		res.status(401);
+		res.json({
+			authorized: false
+		});
+	}
 };
 
 const book = async (req, res) => {
@@ -41,7 +48,7 @@ const book = async (req, res) => {
 		if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
 			if ((await verifyCaptcha(SECRET, req.body["h-captcha-response"])).success) {
 				const schedule = getBookableBusSchedule();
-				const scheduleData = await getScheduleData(schedule.time);
+				const scheduleData = schedule ? await getScheduleData(schedule.time) : null;
 				const takenSeats = scheduleData ? Object.keys(scheduleData).length : 0;
 				if (schedule && takenSeats < SEATS_PER_BUS) {
 					const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
@@ -54,14 +61,20 @@ const book = async (req, res) => {
 						resolve();
 					});
 				}
-				else
+				else {
+					res.status(405);
 					reject("No available tickets.");
+				}
 			}
-			else
+			else {
+				res.status(400);
 				reject("Invalid captcha solution.");
+			}
 		}
-		else
+		else {
+			res.status(401);
 			reject("Unauthorized.");
+		}
 	})
 		.then(() =>
 			res.json({
@@ -86,11 +99,15 @@ const unbook = async (req, res) => {
 					resolve();
 				});
 			}
-			else
+			else {
+				res.status(405);
 				reject("Can't do that right now.");
+			}
 		}
-		else
+		else {
+			res.status(401);
 			reject("Unauthorized.");
+		}
 	})
 		.then(() =>
 			res.json({
