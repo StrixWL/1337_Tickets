@@ -3,7 +3,7 @@ import firebase from 'firebase';
 /* auth */
 export const CLIENT_ID = "u-s4t2ud-b8392d8b5b09f5657d42f07a056f9c85d68c1f941659276cf87972b7ee2b1467";
 export const CLIENT_SECRET = "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";
-export const REDIRECT_URI = "http://localhost/";
+export const REDIRECT_URI = "http://localhost:2000/";
 export const firebaseConfig = {
 	apiKey: "AIzaSyDdlafikBwxDnOLDxBTd38qjrzpQ2km6HY",
 	authDomain: "project-7080878404266037565.firebaseapp.com",

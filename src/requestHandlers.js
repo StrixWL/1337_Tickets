@@ -11,7 +11,6 @@ const database = firebase.database();
 
 const auth =  async (req, res) => {
 	let studentData, Authorization;
-	console.log(req.body.code);
 	if (req.cookies.Authorization)
 		Authorization = await isAuthorized(req.cookies.Authorization);
 	if (!studentData && !Authorization) {
@@ -30,7 +29,6 @@ const auth =  async (req, res) => {
 			}
 			res.cookie("Authorization", Authorization.Authorization);
 			const userDB = database.ref(`Authorizations/${Authorization.Authorization}`);
-			delete Authorization.Authorization;
 			await userDB.set(Authorization);
 		}
 	}

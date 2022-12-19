@@ -23,9 +23,14 @@
         	    method: 'POST',
 				headers: {'Content-Type':'application/x-www-form-urlencoded'},
         	    body
-        	});
-        	const data = await response.json();
-        	console.log(data);
+        	}).then(async res => {
+				for (var pair of res.headers.entries()) {
+      				console.log(pair[0]+ ': '+ pair[1]);
+    			}
+				const data = await res.json();
+        		console.log(data);
+			});
+        	
     	}
     	postToken();
 	</script>
