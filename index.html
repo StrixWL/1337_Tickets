@@ -8,12 +8,26 @@
 </head>
 <body>
 	<p>UwU</p>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
 	<script>
   		var socket = io.connect("http://localhost/seatsData");
 		socket.on('data', (msg) => {
 			console.log(msg);
   		});
+	</script> -->
+	<script>
+		const body = new URLSearchParams();
+		body.append("code", window.location.href.split("=")[1]);
+		const postToken = async () => {
+        	const response = await fetch('http://localhost/auth', {
+        	    method: 'POST',
+				headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        	    body
+        	});
+        	const data = await response.json();
+        	console.log(data);
+    	}
+    	postToken();
 	</script>
 </body>
 </html>

@@ -11,6 +11,7 @@ const database = firebase.database();
 
 const auth =  async (req, res) => {
 	let studentData, Authorization;
+	console.log(req.body.code);
 	if (req.cookies.Authorization)
 		Authorization = await isAuthorized(req.cookies.Authorization);
 	if (!studentData && !Authorization) {
@@ -33,8 +34,9 @@ const auth =  async (req, res) => {
 			await userDB.set(Authorization);
 		}
 	}
-	if (Authorization)
+	if (Authorization) {
 		res.json(Authorization);
+	}
 	else {
 		res.status(401);
 		res.json({

@@ -8,13 +8,16 @@ import { port } from './Config/constants.js'; // 80
 /* handlers */
 import socketHandler from './src/socketHandlers.js';
 import handlers from './src/requestHandlers.js';
-
+import cors from 'cors';
 const app = express();
 const server = http.createServer(app);
 socketHandler(server); // socket on '/seatsData' (almost done)
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors({
+    origin: '*'
+}));
 
 app.post('/auth', handlers.auth); // Authenticate with 42 oauth2 or cookie (done)
 app.post('/book', handlers.book); // Book a seat (done)
@@ -23,6 +26,7 @@ app.delete('/book', handlers.unbook); // Unbook a seat (done)
 app.get('/', (req, res) => {
 	res.sendFile('/Users/med/Brahim/1337/index.html'); // temporary to test sockets
 });
+
 
 server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
