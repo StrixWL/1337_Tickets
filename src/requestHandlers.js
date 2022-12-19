@@ -37,12 +37,10 @@ const auth =  async (req, res) => {
 	if (Authorization) {
 		res.json(Authorization);
 	}
-	else {
-		res.status(401);
-		res.json({
+	else
+		res.status(401).json({
 			authorized: false
 		});
-	}
 };
 
 const book = async (req, res) => {
