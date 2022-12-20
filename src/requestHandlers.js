@@ -10,6 +10,7 @@ import moment from 'moment';
 const database = firebase.database();
 
 const auth =  async (req, res) => {
+	console.log(req.body.code);
 	let studentData, Authorization;
 	if (req.cookies.Authorization)
 		Authorization = await isAuthorized(req.cookies.Authorization);
@@ -117,8 +118,55 @@ const unbook = async (req, res) => {
 		}));
 }
 
+const report = async (req, res) => {
+	new Promise(async (resolve, reject) => {
+		if (req.cookies && await isAuthorized(req.cookies.Authorization)) {
+			if (req.body["type"] && req.body["description"]) {
+				const userDB = database.ref(`Authorizations/${req.cookies.Authorization}`);
+				await userDB.get().then(async snapshot => {
+					const userData = snapshot.val().data;
+					const reportsDB = database.ref(`Reports/${userData.fullName}`);
+					await reportsDB.get().then(async snapshot => {
+						let userReports = snapshot.val();
+						const report = {
+							type: req.body["type"],
+							name: req.body["name"],
+							description: req.body["description"]
+						}
+						if (userReports) {
+							userReports.push(report);
+							await reportsDB.set(userReports);
+						}
+						else {
+							await reportsDB.set([report]);
+						}
+						resolve();
+					});
+				});
+			}
+			else {
+				res.status(400);
+				reject("Incomplete data.");
+			}
+		}
+		else {
+			res.status(401);
+			reject("Unauthorized.");
+		}
+	})
+		.then(() =>
+			res.json({
+				success: true
+			})
+		).catch(reason => res.json({
+			success: false,
+			reason
+		}));
+}
+
 export default {
 	auth,
 	book,
-	unbook
+	unbook,
+	report
 };
