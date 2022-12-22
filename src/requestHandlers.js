@@ -10,11 +10,14 @@ import moment from 'moment';
 const database = firebase.database();
 
 const auth =  async (req, res) => {
-	console.log(req.body.code);
 	let studentData, Authorization;
-	if (req.cookies.Authorization)
+	console.log(req.cookies)
+	if (req.cookies.Authorization) {
+		console.log(req.cookies.Authorization);
 		Authorization = await isAuthorized(req.cookies.Authorization);
-	if (!studentData && !Authorization) {
+		console.log(Authorization);
+	}
+	if (!Authorization) {
 		if (studentData = await getStudentData(await getNewToken(req.body.code))) {
 			console.log(studentData);
 			Authorization = {

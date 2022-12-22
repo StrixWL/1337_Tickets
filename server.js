@@ -15,9 +15,7 @@ socketHandler(server); // socket on '/seatsData' (almost done)
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({
-    origin: '*'
-}));
+app.use(cors({credentials: true, origin: '*'}));
 
 app.post('/auth', handlers.auth); // Authenticate with 42 oauth2 or cookie (done)
 app.post('/book', handlers.book); // Book a seat (done)
